@@ -1,0 +1,58 @@
+<!-- Copyright 2017 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PM Credentials</title>
+    <style>
+      body {
+        width: fit-content;
+      }
+
+      #hydrateImage {
+        margin-bottom: 1rem;
+      }
+
+      form {
+        width: fit-content;
+
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="./stay_hydrated.png" id="hydrateImage" />
+    <!-- An Alarm delay of less than the minimum 1 minute will fire
+    in approximately 1 minute increments if released -->
+    <form id="preferences-form">
+      <label>
+        Access Key
+        <input id="aws_access_key_id" value="" />
+      </label>
+  
+      <label>
+        Secret access key
+        <input id="aws_secret_access_key" value="" />
+      </label>
+  
+      <label>
+        Session token
+        <input id="aws_session_token" value="" />
+      </label>
+      
+      <button type="submit">Sync</button>
+    </form>
+
+
+    <script src="popup.js"></script>
+  </body>
+</html>

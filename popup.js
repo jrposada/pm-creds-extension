@@ -1,0 +1,85 @@
+"use strict";
+
+function extractDomain(url) {
+  const domainPattern =
+    /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)/im;
+  const matches = url.match(domainPattern);
+  return matches && matches[1];
+}
+
+function submit(event) {
+  event.preventDefault();
+
+  // Load the current tab's URL
+  chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+    const currentTab = tabs[0];
+    if (!currentTab.url) return;
+
+    const tabDomain = extractDomain(currentTab.url);
+
+    // Save the user preference for this specific URL
+    const preference = {};
+    preference[tabDomain] = {
+      aws_access_key_id: document.getElementById("aws_access_key_id").value,
+      aws_secret_access_key: document.getElementById("aws_secret_access_key")
+        .value,
+      aws_session_token: document.getElementById("aws_session_token").value,
+    };
+    save(preference);
+
+    syncCredentials(currentTab.id);
+  });
+
+  window.close();
+}
+
+function save(preference) {
+  chrome.storage.sync.set(preference, () => {
+    if (chrome.runtime.error) {
+      console.error("Error saving preference");
+    } else {
+      console.log("Preference saved");
+    }
+  });
+}
+
+function syncCredentials(tabId, payload) {
+  chrome.tabs.sendMessage(tabId, {
+    ...payload,
+    type: "sync-credentials",
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Load the current tab's URL
+  chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+    const currentTab = tabs[0];
+    if (!currentTab.url) return;
+
+    const tabDomain = extractDomain(tabs[0].url);
+
+    // Retrieve user preferences for this specific URL
+    chrome.storage.sync.get([tabDomain], (preference) => {
+      if (chrome.runtime.error) {
+        console.error("Error retrieving user preference");
+      } else {
+        // Initialize form with current preference
+        const {
+          aws_access_key_id,
+          aws_secret_access_key,
+          aws_session_token,
+        } = preference[tabDomain] || {};
+        document.getElementById("aws_access_key_id").value =
+          aws_access_key_id || "";
+        document.getElementById("aws_secret_access_key").value =
+          aws_secret_access_key || "";
+        document.getElementById("aws_session_token").value =
+          aws_session_token || "";
+      }
+    });
+  });
+
+  document
+    .getElementById("preferences-form")
+    .addEventListener("submit", submit);
+});
