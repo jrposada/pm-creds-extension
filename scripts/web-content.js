@@ -1,8 +1,12 @@
 async function onSyncCredentials(event) {
   console.log("Syncing credentials with PM Credentials");
 
-  const { aws_access_key_id, aws_secret_access_key, aws_session_token } =
-    event.detail || {};
+  const {
+    profile,
+    aws_access_key_id,
+    aws_secret_access_key,
+    aws_session_token,
+  } = event.detail || {};
 
   const eventData = {
     aws_access_key_id: get(window, aws_access_key_id),
@@ -16,8 +20,8 @@ async function onSyncCredentials(event) {
       Accept: "*/*",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ browser: eventData }),
-  })
+    body: JSON.stringify({ [profile]: eventData }),
+  });
 }
 
 document.addEventListener("sync-credentials", onSyncCredentials);
