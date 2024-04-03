@@ -1,5 +1,20 @@
 "use strict";
 
+const elements = {
+  get profile() {
+    return document.getElementById("profile");
+  },
+  get aws_access_key_id() {
+    return document.getElementById("aws_access_key_id");
+  },
+  get aws_secret_access_key() {
+    return document.getElementById("aws_secret_access_key");
+  },
+  get aws_session_token() {
+    return document.getElementById("aws_session_token");
+  },
+};
+
 function extractDomain(url) {
   const domainPattern =
     /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)/im;
@@ -20,10 +35,10 @@ function submit(event) {
     // Save the user preference for this specific URL
     const preference = {};
     preference[tabDomain] = {
-      aws_access_key_id: document.getElementById("aws_access_key_id").value,
-      aws_secret_access_key: document.getElementById("aws_secret_access_key")
-        .value,
-      aws_session_token: document.getElementById("aws_session_token").value,
+      profile: elements.profile.value,
+      aws_access_key_id: elements.aws_access_key_id.value,
+      aws_secret_access_key: elements.aws_secret_access_key.value,
+      aws_session_token: elements.aws_session_token.value,
     };
     save(preference);
 
@@ -65,16 +80,15 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         // Initialize form with current preference
         const {
+          profile,
           aws_access_key_id,
           aws_secret_access_key,
           aws_session_token,
         } = preference[tabDomain] || {};
-        document.getElementById("aws_access_key_id").value =
-          aws_access_key_id || "";
-        document.getElementById("aws_secret_access_key").value =
-          aws_secret_access_key || "";
-        document.getElementById("aws_session_token").value =
-          aws_session_token || "";
+        elements.profile.value = profile || "";
+        elements.aws_access_key_id.value = aws_access_key_id || "";
+        elements.aws_secret_access_key.value = aws_secret_access_key || "";
+        elements.aws_session_token.value = aws_session_token || "";
       }
     });
   });
